@@ -158,6 +158,6 @@ def get_augmentation(mode, input_size):
 
 
 if __name__ == '__main__':
-    data = VideoDataset('data/ucf101/', 'data/ucf101/annotations/test.txt', None)
+    data = VideoDataset('data/ucf101/', 'data/ucf101/annotations/train.txt', None)
     for i in range(10):
         print(data[i][1], len(data[i][0]))

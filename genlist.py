@@ -37,7 +37,7 @@ def get_file_list(video_prefix,txt_list,cached_info_path):
                     f.write("\n")
                 f.write("{:s}\t\t{:d}\t{:d}".format(video[0], video[1],video[2]))
 '''
-root_path = './data/ucf101'
+# root_path = './data/ucf101'
 
 
 def read_list(path):
@@ -65,13 +65,12 @@ def gen_list(trainlist, cached_info_path):
     video_list = []
 
     for line in trainlist:
-        tokens = line.split(" ")
-        if len(tokens)
-        id = line['id']
-        path = root_path+'{}.webm'.format(id)
+        id, label = line.split(" ")
+        # id = line['id']
+        # path = root_path+'{}.webm'.format(id)
         frame_counts = int(count_frames(path))
-        frame_counts = frame_counts-1
-        video_list.append(['{}.webm'.format(id), int(frame_counts), int(label)])
+        frame_counts = frame_counts - 1
+        video_list.append([id, frame_counts, int(label)])
 
     with open(cached_info_path, 'w') as f:
         for i, video in enumerate(video_list):
@@ -81,10 +80,7 @@ def gen_list(trainlist, cached_info_path):
 
 
 if __name__ == '__main__':  # 生成训练和测试使用的数据文件
-    # label2idx = get_json("something-something-v2-labels.json")
-    # trainlist = get_json("something-something-v2-train.json")
-    # testlist = get_json("something-something-v2-validation.json")
     train_list = read_list("data/ucf101/annotations/train.txt")
-    test_list = read_list("data/ucf101/annotations/test.txt")
-    gen_list(label2idx, trainlist, 'train.txt')
-    gen_list(label2idx, testlist, 'test.txt')
+    test_list = read_list("data/ucf101/annotations/validate.txt")
+    gen_list(trainlist, "data/ucf101/annotations/train_list.txt")
+    gen_list(testlist, "data/ucf101/annotations/validate_list.txt")
