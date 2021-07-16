@@ -107,12 +107,12 @@ class Slowfast(nn.Module):
         self.fast_res4 = self._make_layer(NonDegenerateBottleneck, 64, 32, layers[2], stride=(1, 2, 2))
         self.fast_res5 = self._make_layer(NonDegenerateBottleneck, 128, 64, layers[3], stride=(1, 2, 2))
 
-        self.slow_res2 = self._make_layer(DegenerateBottleneck, 64 + 8 * 2, 64, layers[0])
-        self.slow_res3 = self._make_layer(DegenerateBottleneck, 256 + 32 * 2, 128, layers[1], stride=(1, 2, 2))
-        self.slow_res4 = self._make_layer(NonDegenerateBottleneck, 512 + 64 * 2, 256, layers[2], stride=(1, 2, 2))
-        self.slow_res5 = self._make_layer(NonDegenerateBottleneck, 1024 + 128 * 2, 512, layers[3], stride=(1, 2, 2))
+        self.slow_res2 = self._make_layer(DegenerateBottleneck, 64 + 8 * 2, 64, layers[0])  # concate fast特征
+        self.slow_res3 = self._make_layer(DegenerateBottleneck, 256 + 32 * 2, 128, layers[1], stride=(1, 2, 2))  # concate fast特征
+        self.slow_res4 = self._make_layer(NonDegenerateBottleneck, 512 + 64 * 2, 256, layers[2], stride=(1, 2, 2))  # concate fast
+        self.slow_res5 = self._make_layer(NonDegenerateBottleneck, 1024 + 128 * 2, 512, layers[3], stride=(1, 2, 2))  #
 
-        self.tconv1 = nn.Conv3d(8, 8 * 2, kernel_size=(5, 1, 1), stride=(8, 1, 1), padding=(2, 0, 0), bias=False)
+        self.tconv1 = nn.Conv3d(8, 8 * 2, kernel_size=(5, 1, 1), stride=(8, 1, 1), padding=(2, 0, 0), bias=False)  # 侧连接,让空间维度相同
         self.tconv2 = nn.Conv3d(32, 32 * 2, kernel_size=(5, 1, 1), stride=(8, 1, 1), padding=(2, 0, 0), bias=False)
         self.tconv3 = nn.Conv3d(64, 64 * 2, kernel_size=(5, 1, 1), stride=(8, 1, 1), padding=(2, 0, 0), bias=False)
         self.tconv4 = nn.Conv3d(128, 128 * 2, kernel_size=(5, 1, 1), stride=(8, 1, 1), padding=(2, 0, 0), bias=False)
