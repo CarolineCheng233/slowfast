@@ -1,7 +1,7 @@
 import torch
 
 
-def print_model_parm_flops(model, input, detail=False):
+def print_model_parm_flops(model, input, detail=False):  # 计算模型的计算量
     list_conv = []
 
     def conv_hook(self, input, output):

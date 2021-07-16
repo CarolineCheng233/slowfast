@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 
 
-class AverageMeter(object):
+class AverageMeter(object):  # 平均以往的记录值
     """Computes and stores the average and current value"""
 
     def __init__(self):
@@ -25,7 +25,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def accuracy(output, target, topk=(1,)):
+def accuracy(output, target, topk=(1,)):  # 计算准确率
     """Computes the precision@k for the specified values of k"""
     maxk = max(topk)
     batch_size = target.size(0)
@@ -41,7 +41,7 @@ def accuracy(output, target, topk=(1,)):
     return res
 
 
-def record_info(info, filename, mode):
+def record_info(info, filename, mode):  # 输出运行时间、准确率等值
     if mode == 'train':
         result = (
             'Batch Time {batch_time} '
@@ -95,7 +95,7 @@ class WarmUpMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
                     for base_lr in self.base_lrs]
 
 
-def save_checkpoint(state, is_best, epoch, filename='checkpoint.pth.tar'):
+def save_checkpoint(state, is_best, epoch, filename='checkpoint.pth.tar'):  # 保存模型的checkpoint
     epoch_name = 'epoch_%d_' % (epoch)
     filename = '_'.join(filename)
     torch.save(state, filename)

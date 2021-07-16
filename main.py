@@ -15,34 +15,35 @@ input_mean = [0.485, 0.456, 0.406]
 input_std = [0.229, 0.224, 0.225]
 scale_size = input_size * 256 // 224
 iter = 0
-
 best_prec1 = 0
+
+
 def main():
-
     global args, best_prec1
-
     args = parser.parse_args()
-
     if not os.path.exists('./record'):
         os.mkdir('./record')
 
+    # 根据数据集确定类别数量
     if args.dataset == 'ucf101':
         num_class = 101
-    elif args.dataset == 'hmdb51':
-        num_class = 51
-    elif args.dataset == 'kinetics':
-        num_class = 400
-    elif args.dataset == 'sthsth':
-        num_class = 174
+    # elif args.dataset == 'hmdb51':
+    #     num_class = 51
+    # elif args.dataset == 'kinetics':
+    #     num_class = 400
+    # elif args.dataset == 'sthsth':
+    #     num_class = 174
     else:
         raise ValueError('Unknown dataset ' + args.dataset)
 
+    # 定义模型
     model = SlowFastNet(num_class)
+    # 进行数据增强
     train_augmentation = get_augmentation('RGB', input_size)
     model = torch.nn.DataParallel(model).cuda()
 
-    args.start_epoch=0
-    if args.resume:
+    args.start_epoch = 0
+    if args.resume:  # 从checkpoint中恢复
         if os.path.isfile(args.resume):
             print(("=> loading checkpoint '{}'".format(args.resume)))
             checkpoint = torch.load(args.resume)
@@ -56,7 +57,7 @@ def main():
 
     cudnn.benchmark = True
 
-    normalize = torchvision.transforms.Compose([GroupNormalize(input_mean, input_std),f2Dt3D()])
+    normalize = torchvision.transforms.Compose([GroupNormalize(input_mean, input_std), f2Dt3D()])
 
     train_loader = torch.utils.data.DataLoader(
         VideoDataset(args.root_path, args.train_list,
@@ -105,21 +106,19 @@ def main():
         # remember best prec@1 and save checkpoint
         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
-        save_checkpoint({
+        save_checkpoint({  # 存储checkpoint
             'epoch': epoch + 1,
             'state_dict': model.state_dict(),
             'best_prec1': best_prec1,
         }, is_best, epoch + 1)
 
 
-def train(train_loader, model, criterion, optimizer, epoch):
+def train(train_loader, model, criterion, optimizer, epoch):  # 训练一轮
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
-
-
 
     # switch to train mode
     model.train()

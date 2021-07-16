@@ -1,47 +1,63 @@
-# This is a unofficial implementation of the paper 'SlowFast Networks for Video Recognition ' with Pytorch
+# 计算机视觉理论与应用作业
 
-## Requirement
+## 环境
  + python 3.6
- + Pytorch 0.1.0
+ + torch 1.7.1
+ + torchvision 0.8.2
  + opencv
- 
-## train
 
-### Prepare
-First,you need to generate the train list and the test list.The form should like this:
+注：低于1.7.1的torch和低于0.8.2的torchvision可能也可，最好是torch版本1.4+，torchvision版本与torch对应，需要与CUDA版本对应，同时CUDA应该能支持对应GPU。
+
+CUDA的安装见 https://github.com/CarolineCheng233/foolish_daily/blob/main/cuda.md
+
+torch和torchvision的安装见 https://pytorch.org/get-started/previous-versions/
+
+
+## 训练模型
+
+### 准备数据集
+##### 支持的数据集
+
+目前仅支持ucf101数据集
+
+##### 下载数据
+
+进入到download文件夹下
+
+运行ucf101_annotations.sh下载ucf101数据集注释文件
+
+运行ucf101_videos.sh下载ucf101数据集视频文件
+
+运行genlist.py文件生成相应数据集的训练文件train.txt和测试文件test.txt
+
+文件格式如下：（分别是视频路径，帧数，标签）
+
 ```
 related_path_of_video1  frames  label
 related_path_of_video2  frames  label
 related_path_of_video3  frames  label
 ...
 ```
-you can use the [genlist.py](./genlist.py) to create them.
 
-This implementation support read the data both in form of video and images.
-So maybe you don't need to convert the video into images.You can see the detail in [dataset.py](./dataset.py).
 
-### Run
+### 运行
 
-train
+训练模型
+
+e.g.
+
 ```bash
 CUDA_VISIBLE_DEVICES=0 python main.py /train_list_of_your_data /test_list_of_your_data /data_path --gd 20 --lr 0.01 --epoch 60 -b12 -j4
 ```
-the code will use all your visible cuda device. so if you don't want to use all the device, you should use CUDA_VISIBLE_DEVICES 
-to tell which device you want to use.
+仅支持DataParallel运行方式，更多参数见config.py文件，有注释说明
 
-test
+
+测试模型
+
+e.g.
+
 ```bash
 CUDA_VISIBLE_DEVICES=0 python main.py /train_list_of_your_data /test_list_of_your_data /data_path --evaluate --resume your_pretrained_mode_path -b12 -j4
 ```
 
-### Result
-
-the networks were trained from scratch.
-UCF101 only use the split 1.
-all the test results are getten from validation split and only use one centre crop.
-
-|      |  top1    |  top5    |
-| :----: | :----: | :----: |
-|  UCF101    |  55.4%    |  79.0%    |
-|  sthsth    |  51.3%    |  79.9%    |
-
+加上--evaluate参数运行在测试模式，更多参数见config.py文件

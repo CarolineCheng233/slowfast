@@ -26,7 +26,7 @@ class VideoRecord(object):
 
 
 class VideoDataset(Dataset):
-
+    # 构建数据集
     def __init__(self, root_path, list_file, transform, mode='train', T=3, tau=16, dense_sample=True, On_Video=True,
                  image_tmpl='img_{:05d}.jpg'):
         self.mode = mode
@@ -45,7 +45,7 @@ class VideoDataset(Dataset):
         # related path of the video  /  number of frames  /  label
         self.video_list = [VideoRecord(x.strip().split()) for x in open(self.list_file)]
 
-    def __getitem__(self, index):
+    def __getitem__(self, index):  # 取数据
         record = self.video_list[index]
         if self.mode == 'train':
             segment_indices = self._sample_indices(record)
@@ -158,6 +158,6 @@ def get_augmentation(mode, input_size):
 
 
 if __name__ == '__main__':
-    data = VideoDataset('/home/qinxin/project/data/sthsth/data', '/home/qinxin/project/data/sthsth/test.txt', None)
+    data = VideoDataset('data/ucf101/', 'data/ucf101/annotations/test.txt', None)
     for i in range(10):
         print(data[i][1], len(data[i][0]))

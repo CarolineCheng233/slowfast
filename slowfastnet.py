@@ -14,11 +14,11 @@ def conv3x1x1(inplanes, planes, stride=1, padding=(1, 0, 0)):
     return nn.Conv3d(inplanes, planes, (3, 1, 1), stride=stride, padding=padding, bias=False)
 
 
-class Degenerate_Bottleneck(nn.Module):
+class DegenerateBottleneck(nn.Module):  # 定义每个bottle_neck模块，退化的3D卷积(实际上只有2D)
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(Degenerate_Bottleneck, self).__init__()
+        super(DegenerateBottleneck, self).__init__()
         self.conv1 = conv1x1x1(inplanes, planes)
         self.bn1 = nn.BatchNorm3d(planes)
         self.conv2 = conv1x3x3(planes, planes, stride)
@@ -52,11 +52,11 @@ class Degenerate_Bottleneck(nn.Module):
         return out
 
 
-class Non_degenerate_Bottleneck(nn.Module):
+class NonDegenerateBottleneck(nn.Module):  # 定义非退化的3D模块
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(Non_degenerate_Bottleneck, self).__init__()
+        super(NonDegenerateBottleneck, self).__init__()
         self.conv1 = conv3x1x1(inplanes, planes)
         self.bn1 = nn.BatchNorm3d(planes)
         self.conv2 = conv1x3x3(planes, planes, stride)
@@ -90,10 +90,10 @@ class Non_degenerate_Bottleneck(nn.Module):
         return out
 
 
-class slowfast(nn.Module):
+class Slowfast(nn.Module):
 
     def __init__(self, layers, num_classes=174):
-        super(slowfast, self).__init__()
+        super(Slowfast, self).__init__()
 
         self.slow_conv1 = nn.Conv3d(3, 64, kernel_size=(1, 7, 7), stride=(1, 2, 2), padding=(0, 3, 3), bias=False)
         self.fast_conv1 = nn.Conv3d(3, 8, kernel_size=(5, 7, 7), stride=(1, 2, 2), padding=(2, 3, 3), bias=False)
@@ -102,15 +102,15 @@ class slowfast(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool3d(kernel_size=(1, 3, 3), stride=(1, 2, 2), padding=(0, 1, 1))
 
-        self.fast_res2 = self._make_layer(Non_degenerate_Bottleneck, 8, 8, layers[0])
-        self.fast_res3 = self._make_layer(Non_degenerate_Bottleneck, 32, 16, layers[1], stride=(1, 2, 2))
-        self.fast_res4 = self._make_layer(Non_degenerate_Bottleneck, 64, 32, layers[2], stride=(1, 2, 2))
-        self.fast_res5 = self._make_layer(Non_degenerate_Bottleneck, 128, 64, layers[3], stride=(1, 2, 2))
+        self.fast_res2 = self._make_layer(NonDegenerateBottleneck, 8, 8, layers[0])
+        self.fast_res3 = self._make_layer(NonDegenerateBottleneck, 32, 16, layers[1], stride=(1, 2, 2))
+        self.fast_res4 = self._make_layer(NonDegenerateBottleneck, 64, 32, layers[2], stride=(1, 2, 2))
+        self.fast_res5 = self._make_layer(NonDegenerateBottleneck, 128, 64, layers[3], stride=(1, 2, 2))
 
-        self.slow_res2 = self._make_layer(Degenerate_Bottleneck, 64 + 8 * 2, 64, layers[0])
-        self.slow_res3 = self._make_layer(Degenerate_Bottleneck, 256 + 32 * 2, 128, layers[1], stride=(1, 2, 2))
-        self.slow_res4 = self._make_layer(Non_degenerate_Bottleneck, 512 + 64 * 2, 256, layers[2], stride=(1, 2, 2))
-        self.slow_res5 = self._make_layer(Non_degenerate_Bottleneck, 1024 + 128 * 2, 512, layers[3], stride=(1, 2, 2))
+        self.slow_res2 = self._make_layer(DegenerateBottleneck, 64 + 8 * 2, 64, layers[0])
+        self.slow_res3 = self._make_layer(DegenerateBottleneck, 256 + 32 * 2, 128, layers[1], stride=(1, 2, 2))
+        self.slow_res4 = self._make_layer(NonDegenerateBottleneck, 512 + 64 * 2, 256, layers[2], stride=(1, 2, 2))
+        self.slow_res5 = self._make_layer(NonDegenerateBottleneck, 1024 + 128 * 2, 512, layers[3], stride=(1, 2, 2))
 
         self.tconv1 = nn.Conv3d(8, 8 * 2, kernel_size=(5, 1, 1), stride=(8, 1, 1), padding=(2, 0, 0), bias=False)
         self.tconv2 = nn.Conv3d(32, 32 * 2, kernel_size=(5, 1, 1), stride=(8, 1, 1), padding=(2, 0, 0), bias=False)
@@ -203,7 +203,7 @@ class slowfast(nn.Module):
 
 
 def SlowFastNet(num_classes=174):
-    model = slowfast([3, 4, 6, 3], num_classes=num_classes)
+    model = Slowfast([3, 4, 6, 3], num_classes=num_classes)
     return model
 
 
@@ -213,4 +213,4 @@ if __name__ == '__main__':
     summary(model, (3, 48, 224, 224))
 
     from tools import print_model_parm_flops
-    print_model_parm_flops(model,torch.randn(1,3,48,224,224))
+    print_model_parm_flops(model, torch.randn(1, 3, 48, 224, 224))

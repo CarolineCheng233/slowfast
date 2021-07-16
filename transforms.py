@@ -7,7 +7,7 @@ import math
 import torch
 
 
-class GroupRandomCrop(object):
+class GroupRandomCrop(object):  # 随机crop
     def __init__(self, size):
         if isinstance(size, numbers.Number):
             self.size = (int(size), int(size))
@@ -34,7 +34,7 @@ class GroupRandomCrop(object):
         return out_images
 
 
-class GroupCenterCrop(object):
+class GroupCenterCrop(object):  # 中心crop
     def __init__(self, size):
         self.worker = torchvision.transforms.CenterCrop(size)
 
@@ -42,7 +42,7 @@ class GroupCenterCrop(object):
         return [self.worker(img) for img in img_group]
 
 
-class GroupRandomHorizontalFlip(object):
+class GroupRandomHorizontalFlip(object):  # 随机水平翻转
     """Randomly horizontally flips the given PIL.Image with a probability of 0.5
     """
     def __init__(self, is_flow=False):
@@ -60,7 +60,7 @@ class GroupRandomHorizontalFlip(object):
             return img_group
 
 
-class GroupNormalize(object):
+class GroupNormalize(object):  # 归一化
     def __init__(self, mean, std):
         self.mean = mean
         self.std = std
@@ -76,7 +76,7 @@ class GroupNormalize(object):
         return tensor
 
 
-class GroupScale(object):
+class GroupScale(object):  # 缩放
     """ Rescales the input PIL.Image to the given 'size'.
     'size' will be the size of the smaller edge.
     For example, if height > width, then image will be
@@ -92,7 +92,7 @@ class GroupScale(object):
         return [self.worker(img) for img in img_group]
 
 
-class GroupOverSample(object):
+class GroupOverSample(object):  # 多次采样
     def __init__(self, crop_size, scale_size=None, flip=True):
         self.crop_size = crop_size if not isinstance(crop_size, int) else (crop_size, crop_size)
 
@@ -131,7 +131,7 @@ class GroupOverSample(object):
         return oversample_group
 
 
-class GroupFullResSample(object):
+class GroupFullResSample(object):  #
     def __init__(self, crop_size, scale_size=None, flip=True):
         self.crop_size = crop_size if not isinstance(crop_size, int) else (crop_size, crop_size)
 
@@ -331,15 +331,17 @@ class ToTorchFormatTensor(object):
             img = img.transpose(0, 1).transpose(0, 2).contiguous()
         return img.float().div(255) if self.div else img.float()
 
+
 class f2Dt3D(object):
     """ convert [t*c,h,w] for 2D conv to [c,t,h,w]  for 3D conv"""
-    def __init__(self,channel=3):
-        self.channel=channel
+    def __init__(self, channel=3):
+        self.channel = channel
 
     def __call__(self, pic):
-        pic=pic.view((-1,self.channel)+pic.size()[1:])
-        pic=pic.transpose(0,1).contiguous()
+        pic = pic.view((-1, self.channel) + pic.size()[1:])
+        pic = pic.transpose(0, 1).contiguous()
         return pic
+
 
 class IdentityTransform(object):
 
