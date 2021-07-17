@@ -65,10 +65,8 @@ def gen_list(trainlist, cached_info_path):
     video_list = []
 
     for line in trainlist:
-        id, label = line.split(" ")
-        # id = line['id']
-        # path = root_path+'{}.webm'.format(id)
-        frame_counts = int(count_frames(path))
+        id, label = line.strip().split(" ")
+        frame_counts = int(count_frames(id))
         frame_counts = frame_counts - 1
         video_list.append([id, frame_counts, int(label)])
 
@@ -81,6 +79,6 @@ def gen_list(trainlist, cached_info_path):
 
 if __name__ == '__main__':  # 生成训练和测试使用的数据文件
     train_list = read_list("data/ucf101/annotations/train.txt")
-    test_list = read_list("data/ucf101/annotations/validate.txt")
+    test_list = read_list("data/ucf101/annotations/val.txt")
     gen_list(trainlist, "data/ucf101/annotations/train_list.txt")
-    gen_list(testlist, "data/ucf101/annotations/validate_list.txt")
+    gen_list(testlist, "data/ucf101/annotations/val_list.txt")

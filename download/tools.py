@@ -17,8 +17,6 @@ for f in train:
     train_list += open(f, 'r', encoding='utf-8').readlines()
 with open(osp.join(dire, "test.txt"), 'w', encoding='utf-8') as f:
     f.write(''.join(test_list))
-with open(osp.join(dire, "train.txt"), 'w', encoding='utf-8') as f:
-    f.write(''.join(train_list))
 
 # 删除原来的单个文件
 for f in test:
@@ -27,3 +25,11 @@ for f in train:
     os.remove(f)
 
 # 从训练集里sample 10%作为验证集
+random.shuffle(train_list)
+number = int(len(train_list) * 0.1)
+val_list, train_list = train_list[:number], train_list[number:]
+
+with open(osp.join(dire, "train.txt"), "w", encoding='utf-8') as f:
+    f.write(''.join(train_list))
+with open(osp.join(dire, "val.txt"), "w", encoding='utf-8') as f:
+    f.write(''.join(val_list))

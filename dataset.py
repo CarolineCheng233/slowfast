@@ -122,10 +122,7 @@ class VideoDataset(Dataset):
                 frame = self._load_image(record.path, idx)
                 images.append(frame)
         else:
-            if self.root_path.find('101') != -1:
-                cap = cv2.VideoCapture(os.path.join(self.root_path, record.path + '.avi'))
-            else:
-                cap = cv2.VideoCapture(os.path.join(self.root_path, record.path))
+            cap = cv2.VideoCapture(os.path.join(self.root_path, record.path))
             for idx in indices:
                 cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
                 res, frame = cap.read()
@@ -158,6 +155,6 @@ def get_augmentation(mode, input_size):
 
 
 if __name__ == '__main__':
-    data = VideoDataset('data/ucf101/', 'data/ucf101/annotations/train.txt', None)
+    data = VideoDataset('data/ucf101/UCF-101', 'data/ucf101/annotations/train_list.txt', None)
     for i in range(10):
         print(data[i][1], len(data[i][0]))

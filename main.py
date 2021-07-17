@@ -27,12 +27,6 @@ def main():
     # 根据数据集确定类别数量
     if args.dataset == 'ucf101':
         num_class = 101
-    # elif args.dataset == 'hmdb51':
-    #     num_class = 51
-    # elif args.dataset == 'kinetics':
-    #     num_class = 400
-    # elif args.dataset == 'sthsth':
-    #     num_class = 174
     else:
         raise ValueError('Unknown dataset ' + args.dataset)
 
